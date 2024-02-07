@@ -10,6 +10,7 @@ def plot_result(data,
                 path:str=None,
                 name:str=None,
                 colour:str='viridis',
+                grad_freq:int=5,
                 save_picture:bool=False,
                 showMe:bool=False):
     """
@@ -30,14 +31,14 @@ def plot_result(data,
         Name for a picture, default name is given by shapes.
     colour: str, optional
         Colour for data field, colour by default is Viridis.
+    grad_freq : int, optional
+        Gradient's arrows frequency, by default equals 5.
     save_picture : bool, optional
         If True, saves picture in .png format.
     showMe : bool, optional
         If True, show the plot.
     """
 
-    # frequency for quivers
-    m = 5
     # shapes
     size_x = data[0].shape[0]
     size_y = data[0].shape[1]
@@ -49,10 +50,14 @@ def plot_result(data,
     # making plot
     fig, ax = plt.subplots()
     # show data
-    line = plt.imshow(data[:size_x-1, :size_y-1], aspect = 'auto', cmap = 'turbo', extent = [0,size_x,size_y,0])
+    line = plt.imshow(data[:size_x-1, :size_y-1], aspect = 'auto', cmap = colour, extent = [0,size_x,size_y,0])
     plt.colorbar(line, ax=ax)
     # gradient for velocity
-    ax.quiver(X[::m]+1, Y[::m]+1, data_Vx[0].T[::m, ::m], data_Vy[0].T[::m, ::m], color='red')
+    ax.quiver(X[::grad_freq]+1,
+              Y[::grad_freq]+1,
+              data_Vx[0].T[::grad_freq, ::grad_freq],
+              data_Vy[0].T[::grad_freq, ::grad_freq],
+              color='red')
 
     ax.set_xlabel('x, m')
     ax.set_ylabel('y, m')
@@ -64,7 +69,6 @@ def plot_result(data,
 
     # saving picture
     if save_picture == True:
-        # plt.savefig(f"{path}/max_x={X.shape[0]}, max_y={Y.shape[0]},.png")
         if name == None:
             if path==None:
                 if os.path.exists(f"max_x={size_x}, max_y={size_y}.png")==True:
